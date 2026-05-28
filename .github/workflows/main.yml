@@ -1,0 +1,33 @@
+name: Python Secure App CI
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        # 🌟 일반 패키지와 개발용(dev) 패키지를 모두 설치합니다!
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+        pip install pytest
+
+    - name: Run Tests
+      # 🌟 원작자가 만들어둔 전용 테스트 스크립트를 우선 실행합니다.
+      run: python run_tests.py
